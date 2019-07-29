@@ -9,7 +9,7 @@
     <keywords>cordova,motion</keywords>
 
     <js-module src="www/motion.js" name="MotionPlugin">
-      <clobbers target="motion" />
+      <clobbers target="motionPlugin" />
     </js-module>
 
     <!-- android -->
@@ -23,6 +23,7 @@
 
       <!-- Source files -->
       <source-file src="src/android/MotionPlugin.java" target-dir="src/es/simbiosys/cordova/plugin/motion" />
+      <source-file src="src/android/Accelerometer.java" target-dir="src/es/simbiosys/cordova/plugin/motion" />
     </platform>
 
 </plugin>
