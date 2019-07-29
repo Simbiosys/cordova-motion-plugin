@@ -1,0 +1,19 @@
+{
+  "name": "cordova-motion-plugin",
+  "version": "1.0.0",
+  "description": "Cordova Motion Plugin",
+  "cordova": {
+    "id": "cordova-motion-plugin",
+    "platforms": [
+      "android"
+    ]
+  },
+  "keywords": [
+    "cordova",
+    "motion",
+    "ecosystem:cordova",
+    "cordova-android"
+  ],
+  "author": "Simbiosys",
+  "license": "Apache 2.0"
+}

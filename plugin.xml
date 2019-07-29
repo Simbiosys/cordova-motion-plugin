@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    id="cordova-motion-plugin"
+    version="1.0.0">
+    <name>MotionPlugin</name>
+    <description>Cordova Motion Plugin</description>
+    <license>Apache 2.0</license>
+    <keywords>cordova,motion</keywords>
+
+    <js-module src="www/motion.js" name="MotionPlugin">
+      <clobbers target="motion" />
+    </js-module>
+
+    <!-- android -->
+    <platform name="android">
+      <config-file target="res/xml/config.xml" parent="/*">
+        <feature name="MotionPlugin" >
+          <param name="android-package" value="es.simbiosys.cordova.plugin.motion.MotionPlugin"/>
+          <param name="onload" value="true" />
+        </feature>
+      </config-file>
+
+      <!-- Source files -->
+      <source-file src="src/android/MotionPlugin.java" target-dir="src/es/simbiosys/cordova/plugin/motion" />
+    </platform>
+
+</plugin>
