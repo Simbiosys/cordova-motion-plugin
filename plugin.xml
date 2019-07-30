@@ -23,7 +23,8 @@
 
       <!-- Source files -->
       <source-file src="src/android/MotionPlugin.java" target-dir="src/es/simbiosys/cordova/plugin/motion" />
-      <source-file src="src/android/Accelerometer.java" target-dir="src/es/simbiosys/cordova/plugin/motion" />
+      <source-file src="src/android/sensors/BaseSensor.java" target-dir="src/es/simbiosys/cordova/plugin/motion/sensors" />
+      <source-file src="src/android/sensors/Accelerometer.java" target-dir="src/es/simbiosys/cordova/plugin/motion/sensors" />
     </platform>
 
 </plugin>

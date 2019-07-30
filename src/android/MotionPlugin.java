@@ -1,7 +1,6 @@
 package es.simbiosys.cordova.plugin.motion;
 
 import android.hardware.Sensor;
-import android.telecom.Call;
 
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
@@ -13,10 +12,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import es.simbiosys.cordova.plugin.motion.sensors.Accelerometer;
+
 public class MotionPlugin extends CordovaPlugin {
 
   private static final String TAG = "MotionPlugin";
-  private static final String accelerometerSensorName = "Accelerometer";
 
   private Accelerometer accelerometerSensor;
 

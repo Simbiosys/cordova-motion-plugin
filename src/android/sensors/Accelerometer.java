@@ -1,30 +1,25 @@
-package es.simbiosys.cordova.plugin.motion;
+package es.simbiosys.cordova.plugin.motion.sensors;
 
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.Log;
 
 import org.apache.cordova.CallbackContext;
-import org.apache.cordova.PluginResult;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Accelerometer implements SensorEventListener {
+public class Accelerometer extends BaseSensor {
 
-    private SensorManager mSensorManager;
     private Sensor mAccelerometer;
-
-    private CallbackContext eventsCallbackContext;
 
     private static final String eventName = "onAccelerometerChanged";
     private static final String TAG = "Accelerometer";
 
     public Accelerometer (Context context) {
-        this.eventsCallbackContext = null;
-        this.mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+        super(context);
+
         this.mAccelerometer = this.mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
     }
 
@@ -32,20 +27,9 @@ public class Accelerometer implements SensorEventListener {
         this.eventsCallbackContext = callbackContext;
     }
 
+    @Override
     public void startCapture() {
-        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-    }
-
-    public void stopCapture() {
-        mSensorManager.unregisterListener(this);
-    }
-
-    private void triggerJsEvent(JSONObject message) {
-        if (eventsCallbackContext != null) {
-            PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, message);
-            pluginResult.setKeepCallback(true);
-            eventsCallbackContext.sendPluginResult(pluginResult);
-        }
+        this.mSensorManager.registerListener(this, this.mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
