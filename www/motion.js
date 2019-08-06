@@ -5,6 +5,7 @@ const channel = require('cordova/channel')
 function MotionPlugin () {
   this.sensorTypes = {
     ACCELEROMETER: 1,
+    LINEAR_ACCELEROMETER: 10,
     SIGNIFICANT_MOTION: 17
   }
 }
@@ -44,6 +45,15 @@ MotionPlugin.prototype.enableTriggerAfterEvent = function (successCallback, erro
 
 MotionPlugin.prototype.disableTriggerAfterEvent = function (successCallback, errorCallback) {
   exec(successCallback, errorCallback, 'MotionPlugin', 'disableTriggerAfterEvent', [this.sensorTypes.SIGNIFICANT_MOTION])
+}
+
+// Linear accelerometer (Android & iOS)
+MotionPlugin.prototype.startLinearAccelerometerCapture = function (successCallback, errorCallback) {
+  exec(successCallback, errorCallback, 'MotionPlugin', 'startSensorCapture', [this.sensorTypes.LINEAR_ACCELEROMETER])
+}
+
+MotionPlugin.prototype.stopLinearAccelerometerCapture = function (successCallback, errorCallback) {
+  exec(successCallback, errorCallback, 'MotionPlugin', 'stopSensorCapture', [this.sensorTypes.LINEAR_ACCELEROMETER])
 }
 
 module.exports = new MotionPlugin()

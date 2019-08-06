@@ -26,6 +26,7 @@
       <source-file src="src/android/sensors/BaseSensor.java" target-dir="src/es/simbiosys/cordova/plugin/motion/sensors" />
       <source-file src="src/android/sensors/Accelerometer.java" target-dir="src/es/simbiosys/cordova/plugin/motion/sensors" />
       <source-file src="src/android/sensors/SignificantMotion.java" target-dir="src/es/simbiosys/cordova/plugin/motion/sensors" />
+      <source-file src="src/android/sensors/LinearAccelerometer.java" target-dir="src/es/simbiosys/cordova/plugin/motion/sensors" />
     </platform>
 
 </plugin>
