@@ -6,7 +6,6 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
 import android.util.Log;
 
-import org.apache.cordova.CallbackContext;
 import org.json.JSONException;
 import org.json.JSONObject;
 
