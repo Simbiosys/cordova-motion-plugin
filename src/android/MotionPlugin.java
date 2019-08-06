@@ -13,12 +13,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import es.simbiosys.cordova.plugin.motion.sensors.Accelerometer;
+import es.simbiosys.cordova.plugin.motion.sensors.SignificantMotion;
 
 public class MotionPlugin extends CordovaPlugin {
 
   private static final String TAG = "MotionPlugin";
 
   private Accelerometer accelerometerSensor;
+  private SignificantMotion significantMotionSensor;
 
   @Override
   public void initialize(CordovaInterface cordova, CordovaWebView webView) {
@@ -26,6 +28,7 @@ public class MotionPlugin extends CordovaPlugin {
 
     // Initialize motion sensors
     accelerometerSensor = new Accelerometer(cordova.getContext());
+    significantMotionSensor = new SignificantMotion(cordova.getContext());
   }
 
   @Override
@@ -53,6 +56,28 @@ public class MotionPlugin extends CordovaPlugin {
       this.stopSensorCapture(callbackContext, sensorType);
 
       return true;
+    } else if (action.equals("enableTriggerAfterEvent")) {
+      int sensorType = args.optInt(0);
+      if (sensorType != Sensor.TYPE_SIGNIFICANT_MOTION) {
+        callbackContext.error("Method unavailable for this sensor");
+        return true;
+      }
+
+      this.significantMotionSensor.setEnableAfterEvent(true);
+      callbackContext.success("Trigger will be enabled automatically after event is triggered");
+
+      return true;
+    } else if (action.equals("disableTriggerAfterEvent")) {
+      int sensorType = args.optInt(0);
+      if (sensorType != Sensor.TYPE_SIGNIFICANT_MOTION) {
+        callbackContext.error("Method unavailable for this sensor");
+        return true;
+      }
+
+      this.significantMotionSensor.setEnableAfterEvent(false);
+      callbackContext.success("Trigger will be disabled after event is triggered");
+
+      return true;
     }
 
     return false;
@@ -61,6 +86,7 @@ public class MotionPlugin extends CordovaPlugin {
   private void setSensorEventsCallbackContext(CallbackContext callbackContext) {
     // Set events callback context on each sensor to communicate Java with Javascript
     this.accelerometerSensor.setEventsCallbackContext(callbackContext);
+    this.significantMotionSensor.setEventsCallbackContext(callbackContext);
   }
 
   private void startSensorCapture(CallbackContext callbackContext, int sensorType) {
@@ -73,6 +99,15 @@ public class MotionPlugin extends CordovaPlugin {
 
         accelerometerSensor.startCapture();
         callbackContext.success("Accelerometer event capture started");
+        break;
+      case Sensor.TYPE_SIGNIFICANT_MOTION:
+        if (significantMotionSensor == null) {
+          callbackContext.error("No accelerometer sensor");
+          return;
+        }
+
+        significantMotionSensor.startCapture();
+        callbackContext.success("SignificantMotion trigger enabled");
         break;
       default:
         callbackContext.error("Unknown sensor");
@@ -89,6 +124,15 @@ public class MotionPlugin extends CordovaPlugin {
 
         accelerometerSensor.stopCapture();
         callbackContext.success("Accelerometer event capture started");
+        break;
+      case Sensor.TYPE_SIGNIFICANT_MOTION:
+        if (significantMotionSensor == null) {
+          callbackContext.error("No accelerometer sensor");
+          return;
+        }
+
+        significantMotionSensor.stopCapture();
+        callbackContext.success("SignificantMotion trigger disabled");
         break;
       default:
         callbackContext.error("Unknown sensor");

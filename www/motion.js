@@ -4,7 +4,8 @@ const channel = require('cordova/channel')
 
 function MotionPlugin () {
   this.sensorTypes = {
-    ACCELEROMETER: 1
+    ACCELEROMETER: 1,
+    SIGNIFICANT_MOTION: 17
   }
 }
 
@@ -19,12 +20,30 @@ channel.onCordovaReady.subscribe(function () {
   }, 'MotionPlugin', 'subscribeToNativeEvents', [])
 })
 
+// Accelerometer sensor (Android & iOS)
 MotionPlugin.prototype.startAccelerometerCapture = function (successCallback, errorCallback) {
   exec(successCallback, errorCallback, 'MotionPlugin', 'startSensorCapture', [this.sensorTypes.ACCELEROMETER])
 }
 
 MotionPlugin.prototype.stopAccelerometerCapture = function (successCallback, errorCallback) {
   exec(successCallback, errorCallback, 'MotionPlugin', 'stopSensorCapture', [this.sensorTypes.ACCELEROMETER])
+}
+
+// Significant motion sensor (Android only)
+MotionPlugin.prototype.enableSignificantMotionTrigger = function (successCallback, errorCallback) {
+  exec(successCallback, errorCallback, 'MotionPlugin', 'startSensorCapture', [this.sensorTypes.SIGNIFICANT_MOTION])
+}
+
+MotionPlugin.prototype.disableSignificantMotionTrigger = function (successCallback, errorCallback) {
+  exec(successCallback, errorCallback, 'MotionPlugin', 'stopSensorCapture', [this.sensorTypes.SIGNIFICANT_MOTION])
+}
+
+MotionPlugin.prototype.enableTriggerAfterEvent = function (successCallback, errorCallback) {
+  exec(successCallback, errorCallback, 'MotionPlugin', 'enableTriggerAfterEvent', [this.sensorTypes.SIGNIFICANT_MOTION])
+}
+
+MotionPlugin.prototype.disableTriggerAfterEvent = function (successCallback, errorCallback) {
+  exec(successCallback, errorCallback, 'MotionPlugin', 'disableTriggerAfterEvent', [this.sensorTypes.SIGNIFICANT_MOTION])
 }
 
 module.exports = new MotionPlugin()
