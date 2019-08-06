@@ -23,10 +23,6 @@ public class Accelerometer extends BaseSensor {
         this.mAccelerometer = this.mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
     }
 
-    public void setEventsCallbackContext (CallbackContext callbackContext) {
-        this.eventsCallbackContext = callbackContext;
-    }
-
     @Override
     public void startCapture() {
         this.mSensorManager.registerListener(this, this.mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
