@@ -1,7 +1,11 @@
 import Foundation
 
 @objc(MotionPlugin) class MotionPlugin: CDVPlugin {
-    var eventListenerCallbackId : String?
+    var eventListenerCallbackId: String?
+    
+    enum SensorTypes: Int {
+        case ACCELEROMETER = 1
+    }
     
     @objc(subscribeToNativeEvents:)
     func subscribeToNativeEvents(_ command: CDVInvokedUrlCommand) {
@@ -21,6 +25,58 @@ import Foundation
         pluginResult!.setKeepCallbackAs(true)
         
         // Return OK result
+        self.commandDelegate!.send(
+            pluginResult,
+            callbackId: command.callbackId
+        )
+    }
+    
+    @objc(startSensorCapture:)
+    func startSensorCapture(_ command: CDVInvokedUrlCommand) {
+        let sensorType = command.arguments[0] as? Int ?? -1
+        
+        var pluginResult: CDVPluginResult?
+        
+        switch sensorType {
+        case SensorTypes.ACCELEROMETER.rawValue:
+            pluginResult = CDVPluginResult(
+                status: CDVCommandStatus_OK,
+                messageAs: "Accelerometer event capture started"
+            )
+            break
+        default:
+            pluginResult = CDVPluginResult(
+                status: CDVCommandStatus_ERROR,
+                messageAs: "Unknown sensor"
+            )
+        }
+        
+        self.commandDelegate!.send(
+            pluginResult,
+            callbackId: command.callbackId
+        )
+    }
+    
+    @objc(stopSensorCapture:)
+    func stopSensorCapture(_ command: CDVInvokedUrlCommand) {
+        let sensorType = command.arguments[0] as? Int ?? -1
+        
+        var pluginResult: CDVPluginResult?
+        
+        switch sensorType {
+        case SensorTypes.ACCELEROMETER.rawValue:
+            pluginResult = CDVPluginResult(
+                status: CDVCommandStatus_OK,
+                messageAs: "Accelerometer event capture stopped"
+            )
+            break
+        default:
+            pluginResult = CDVPluginResult(
+                status: CDVCommandStatus_ERROR,
+                messageAs: "Unknown sensor"
+            )
+        }
+        
         self.commandDelegate!.send(
             pluginResult,
             callbackId: command.callbackId
