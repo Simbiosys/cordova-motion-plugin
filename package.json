@@ -12,7 +12,8 @@
     "cordova",
     "motion",
     "ecosystem:cordova",
-    "cordova-android"
+    "cordova-android",
+    "cordova-ios"
   ],
   "author": "Simbiosys",
   "license": "Apache 2.0"
