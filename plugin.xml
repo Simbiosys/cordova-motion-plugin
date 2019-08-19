@@ -39,6 +39,8 @@
       </config-file>
 
       <source-file src="src/ios/MotionPlugin.swift" />
+      <source-file src="src/ios/TriggerJsEventDelegate.swift" />
+      <source-file src="src/ios/sensors/Accelerometer.swift" />
 
       <header-file src="src/ios/MotionPlugin-Bridging-Header.h"/>
 
