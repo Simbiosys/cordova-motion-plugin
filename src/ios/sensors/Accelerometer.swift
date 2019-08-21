@@ -20,17 +20,23 @@ class Accelerometer {
         self.eventsCallbackId = callbackId
     }
     
-    func startCapture() {
-        // Make sure the accelerometer hardware is available
-        if self.motionManager.isAccelerometerAvailable {
-            self.motionManager.accelerometerUpdateInterval = self.timeInterval
-            self.motionManager.startAccelerometerUpdates(to: self.queue, withHandler: self.accelerometerUpdatesHandler)
+    func startCapture() -> (status: CDVCommandStatus, message: String) {
+        // Check whether the accelerometer hardware is available
+        if !self.motionManager.isAccelerometerAvailable {
+            return (CDVCommandStatus_ERROR, "Accelerometer unavailable")
         }
+        
+        self.motionManager.accelerometerUpdateInterval = self.timeInterval
+        self.motionManager.startAccelerometerUpdates(to: self.queue, withHandler: self.accelerometerUpdatesHandler)
+        
+        return (CDVCommandStatus_OK, "Accelerometer event capture started")
     }
     
-    func stopCapture() {
+    func stopCapture() -> (status: CDVCommandStatus, message: String) {
         self.queue.cancelAllOperations()
         self.motionManager.stopAccelerometerUpdates()
+        
+        return (CDVCommandStatus_OK, "Accelerometer event capture stopped")
     }
     
     func accelerometerUpdatesHandler (accelerometerData: Optional<CMAccelerometerData>, error: Optional<Error>) {

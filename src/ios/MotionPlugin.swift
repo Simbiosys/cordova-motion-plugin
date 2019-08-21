@@ -60,11 +60,10 @@ import Foundation
                 break
             }
             
-            self.accelerometer?.startCapture()
-            
+            let result = self.accelerometer?.startCapture()
             pluginResult = CDVPluginResult(
-                status: CDVCommandStatus_OK,
-                messageAs: "Accelerometer event capture started"
+                status: result?.status ?? CDVCommandStatus_ERROR,
+                messageAs: result?.message
             )
             break
         case SensorTypes.ACTIVITY_DETECTION.rawValue:
@@ -111,11 +110,10 @@ import Foundation
                 break
             }
             
-            self.accelerometer?.stopCapture()
-            
+            let result = self.accelerometer?.stopCapture()
             pluginResult = CDVPluginResult(
-                status: CDVCommandStatus_OK,
-                messageAs: "Accelerometer event capture stopped"
+                status: result?.status ?? CDVCommandStatus_ERROR,
+                messageAs: result?.message
             )
             break
         case SensorTypes.ACTIVITY_DETECTION.rawValue:
