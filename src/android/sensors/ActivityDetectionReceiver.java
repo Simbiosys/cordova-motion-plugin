@@ -5,8 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.google.android.gms.location.ActivityTransition;
 import com.google.android.gms.location.ActivityTransitionEvent;
 import com.google.android.gms.location.ActivityTransitionResult;
+import com.google.android.gms.location.DetectedActivity;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.PluginResult;
@@ -35,8 +37,8 @@ public class ActivityDetectionReceiver extends BroadcastReceiver {
 
                   try {
                       // Build event data
-                      eventData.put("activityType", event.getActivityType());
-                      eventData.put("transitionType", event.getTransitionType());
+                      eventData.put("activityType", getActivityTypeLiteral(event.getActivityType()));
+                      eventData.put("transitionType", getTransitionTypeLiteral(event.getTransitionType()));
 
                       // Build message
                       message.put("eventName", eventName);
@@ -48,6 +50,35 @@ public class ActivityDetectionReceiver extends BroadcastReceiver {
                   }
               }
           }
+    }
+
+    private String getTransitionTypeLiteral (int activityType) {
+        switch (activityType) {
+            case ActivityTransition.ACTIVITY_TRANSITION_ENTER:
+                return "ACTIVITY_TRANSITION_ENTER";
+            case ActivityTransition.ACTIVITY_TRANSITION_EXIT:
+                return "ACTIVITY_TRANSITION_EXIT";
+            default:
+                return "UNKNOWN";
+
+        }
+    }
+
+    private String getActivityTypeLiteral (int transitionType) {
+        switch (transitionType) {
+            case DetectedActivity.IN_VEHICLE:
+                return "IN_VEHICLE";
+            case DetectedActivity.ON_BICYCLE:
+                return "ON_BICYCLE";
+            case DetectedActivity.RUNNING:
+                return "RUNNING";
+            case DetectedActivity.STILL:
+                return "STILL";
+            case DetectedActivity.WALKING:
+                return "WALKING";
+            default:
+                return "UNKNOWN";
+        }
     }
 
     public void triggerJsEvent(JSONObject message) {
