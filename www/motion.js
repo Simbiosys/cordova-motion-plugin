@@ -4,6 +4,7 @@ const channel = require('cordova/channel')
 
 function MotionPlugin () {
   this.sensorTypes = {
+    ACTIVITY_DETECTION: 0,
     ACCELEROMETER: 1,
     LINEAR_ACCELEROMETER: 10,
     SIGNIFICANT_MOTION: 17
@@ -54,6 +55,15 @@ MotionPlugin.prototype.startLinearAccelerometerCapture = function (successCallba
 
 MotionPlugin.prototype.stopLinearAccelerometerCapture = function (successCallback, errorCallback) {
   exec(successCallback, errorCallback, 'MotionPlugin', 'stopSensorCapture', [this.sensorTypes.LINEAR_ACCELEROMETER])
+}
+
+// Activity detection (Android & iOS)
+MotionPlugin.prototype.startActivityDetectionCapture = function (successCallback, errorCallback) {
+  exec(successCallback, errorCallback, 'MotionPlugin', 'startSensorCapture', [this.sensorTypes.ACTIVITY_DETECTION])
+}
+
+MotionPlugin.prototype.stopActivityDetectionCapture = function (successCallback, errorCallback) {
+  exec(successCallback, errorCallback, 'MotionPlugin', 'stopSensorCapture', [this.sensorTypes.ACTIVITY_DETECTION])
 }
 
 module.exports = new MotionPlugin()

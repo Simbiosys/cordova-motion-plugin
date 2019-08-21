@@ -13,16 +13,19 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import es.simbiosys.cordova.plugin.motion.sensors.Accelerometer;
+import es.simbiosys.cordova.plugin.motion.sensors.ActivityDetection;
 import es.simbiosys.cordova.plugin.motion.sensors.LinearAccelerometer;
 import es.simbiosys.cordova.plugin.motion.sensors.SignificantMotion;
 
 public class MotionPlugin extends CordovaPlugin {
 
   private static final String TAG = "MotionPlugin";
+  private static final int ACTIVITY_DETECTION_ID = 0;
 
   private Accelerometer accelerometerSensor;
   private SignificantMotion significantMotionSensor;
   private LinearAccelerometer linearAccelerometerSensor;
+  private ActivityDetection activityDetectionSensor;
 
   @Override
   public void initialize(CordovaInterface cordova, CordovaWebView webView) {
@@ -32,6 +35,9 @@ public class MotionPlugin extends CordovaPlugin {
     accelerometerSensor = new Accelerometer(cordova.getContext());
     significantMotionSensor = new SignificantMotion(cordova.getContext());
     linearAccelerometerSensor = new LinearAccelerometer(cordova.getContext());
+
+    // Initialize activity detection and register receiver
+    activityDetectionSensor = new ActivityDetection(cordova.getContext());
   }
 
   @Override
@@ -91,6 +97,7 @@ public class MotionPlugin extends CordovaPlugin {
     this.accelerometerSensor.setEventsCallbackContext(callbackContext);
     this.significantMotionSensor.setEventsCallbackContext(callbackContext);
     this.linearAccelerometerSensor.setEventsCallbackContext(callbackContext);
+    this.activityDetectionSensor.setEventsCallbackContext(callbackContext);
   }
 
   private void startSensorCapture(CallbackContext callbackContext, int sensorType) {
@@ -121,6 +128,14 @@ public class MotionPlugin extends CordovaPlugin {
 
         linearAccelerometerSensor.startCapture();
         callbackContext.success("Linear accelerometer event capture started");
+        break;
+      case ACTIVITY_DETECTION_ID:
+        if (activityDetectionSensor == null) {
+          callbackContext.error("No activity detection sensor");
+          return;
+        }
+
+        activityDetectionSensor.startCapture(callbackContext);
         break;
       default:
         callbackContext.error("Unknown sensor");
@@ -155,6 +170,14 @@ public class MotionPlugin extends CordovaPlugin {
 
         linearAccelerometerSensor.stopCapture();
         callbackContext.success("Linear accelerometer event capture stopped");
+        break;
+      case ACTIVITY_DETECTION_ID:
+        if (activityDetectionSensor == null) {
+          callbackContext.error("No activity detection sensor");
+          return;
+        }
+
+        activityDetectionSensor.stopCapture(callbackContext);
         break;
       default:
         callbackContext.error("Unknown sensor");
