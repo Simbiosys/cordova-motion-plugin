@@ -60,6 +60,7 @@
       <source-file src="src/ios/MotionPlugin.swift" />
       <source-file src="src/ios/TriggerJsEventDelegate.swift" />
       <source-file src="src/ios/sensors/Accelerometer.swift" />
+      <source-file src="src/ios/sensors/ActivityDetection.swift" />
 
       <header-file src="src/ios/MotionPlugin-Bridging-Header.h"/>
 

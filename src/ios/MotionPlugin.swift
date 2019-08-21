@@ -2,15 +2,20 @@ import Foundation
 
 @objc(MotionPlugin) class MotionPlugin: CDVPlugin, TriggerJsEventDelegate {
     enum SensorTypes: Int {
+        case ACTIVITY_DETECTION = 0
         case ACCELEROMETER = 1
     }
     
     var eventsCallbackId: String?
     var accelerometer: Accelerometer?
+    var activityDetection: ActivityDetection?
     
     override func pluginInitialize() {
         accelerometer = Accelerometer()
         accelerometer?.delegate = self
+        
+        activityDetection = ActivityDetection()
+        activityDetection?.delegate = self
         
         super.pluginInitialize()
     }
@@ -62,6 +67,21 @@ import Foundation
                 messageAs: "Accelerometer event capture started"
             )
             break
+        case SensorTypes.ACTIVITY_DETECTION.rawValue:
+            if self.activityDetection == nil {
+                pluginResult = CDVPluginResult(
+                    status: CDVCommandStatus_ERROR,
+                    messageAs: "No activity detection sensor"
+                )
+                break
+            }
+            
+            let result = activityDetection?.startCapture()
+            pluginResult = CDVPluginResult(
+                status: result?.status ?? CDVCommandStatus_ERROR,
+                messageAs: result?.message
+            )
+            break
         default:
             pluginResult = CDVPluginResult(
                 status: CDVCommandStatus_ERROR,
@@ -96,6 +116,21 @@ import Foundation
             pluginResult = CDVPluginResult(
                 status: CDVCommandStatus_OK,
                 messageAs: "Accelerometer event capture stopped"
+            )
+            break
+        case SensorTypes.ACTIVITY_DETECTION.rawValue:
+            if self.activityDetection == nil {
+                pluginResult = CDVPluginResult(
+                    status: CDVCommandStatus_ERROR,
+                    messageAs: "No activity detection sensor"
+                )
+                break
+            }
+            
+            let result = activityDetection?.stopCapture()
+            pluginResult = CDVPluginResult(
+                status: result?.status ?? CDVCommandStatus_ERROR,
+                messageAs: result?.message
             )
             break
         default:
