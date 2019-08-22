@@ -66,4 +66,8 @@ MotionPlugin.prototype.stopActivityDetectionCapture = function (successCallback,
   exec(successCallback, errorCallback, 'MotionPlugin', 'stopSensorCapture', [this.sensorTypes.ACTIVITY_DETECTION])
 }
 
+MotionPlugin.prototype.getActivityLog = function (fromDate, toDate, successCallback, errorCallback) {
+  exec(successCallback, errorCallback, 'MotionPlugin', 'getActivityLog', [fromDate, toDate])
+}
+
 module.exports = new MotionPlugin()

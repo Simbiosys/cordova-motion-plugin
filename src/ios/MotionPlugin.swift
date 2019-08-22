@@ -144,6 +144,60 @@ import Foundation
         )
     }
     
+    @objc(getActivityLog:)
+    func getActivityLog(_ command: CDVInvokedUrlCommand) {
+        let fromDateStr = command.arguments[0] as? String ?? nil
+        let toDateStr = command .arguments[1] as? String ?? nil
+        
+        var pluginResult: CDVPluginResult?
+        
+        if fromDateStr == nil || toDateStr == nil {
+            pluginResult = CDVPluginResult(
+                status: CDVCommandStatus_ERROR,
+                messageAs: "Wrong parameters"
+            )
+            self.commandDelegate!.send(
+                pluginResult,
+                callbackId: command.callbackId
+            )
+            return
+        }
+        
+        let fromDate = self.getDate(from: fromDateStr!)
+        let toDate = self.getDate(from: toDateStr!)
+        
+        if fromDate == nil || toDate == nil {
+            pluginResult = CDVPluginResult(
+                status: CDVCommandStatus_ERROR,
+                messageAs: "Wrong date format"
+            )
+            self.commandDelegate!.send(
+                pluginResult,
+                callbackId: command.callbackId
+            )
+            return
+        }
+        
+        let result = self.activityDetection?.motionActivityQuery(fromDate: fromDate!, toDate: toDate!)
+        pluginResult = CDVPluginResult(
+            status: result?.status ?? CDVCommandStatus_OK,
+            messageAs: result?.message
+        )
+        self.commandDelegate!.send(
+            pluginResult,
+            callbackId: command.callbackId
+        )
+        return
+    }
+    
+    func getDate(from: String) -> Date? {
+        let formatter = DateFormatter()
+        formatter.timeZone = TimeZone.current
+        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        
+        return formatter.date(from: from)
+    }
+    
     func triggerJsEvent(_ message: [AnyHashable : Any], resultOk: Bool = true) {
         if self.eventsCallbackId == nil {
             print("No callback ID")
