@@ -1,131 +1,121 @@
 package es.simbiosys.cordova.plugin.motion.sensors;
 
-import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
+import android.os.SystemClock;
 import android.util.Log;
 
-import com.google.android.gms.location.ActivityRecognition;
 import com.google.android.gms.location.ActivityTransition;
-import com.google.android.gms.location.ActivityTransitionRequest;
+import com.google.android.gms.location.ActivityTransitionEvent;
+import com.google.android.gms.location.ActivityTransitionResult;
 import com.google.android.gms.location.DetectedActivity;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 
 import org.apache.cordova.CallbackContext;
+import org.apache.cordova.PluginResult;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-public class ActivityDetection {
+public class ActivityDetectionReceiver extends BroadcastReceiver {
 
     private static final String TAG = "ActivityDetection";
+    private static final String eventName = "onActivityDetection";
 
-    private final int[] availableActivityTypes = new int[]{
-            DetectedActivity.IN_VEHICLE,
-            DetectedActivity.ON_BICYCLE,
-            DetectedActivity.RUNNING,
-            DetectedActivity.STILL,
-            DetectedActivity.WALKING
-    };
+    public static CallbackContext eventsCallbackContext;
 
-    private Context mContext;
-    private List<ActivityTransition> transitions;
-    private ActivityTransitionRequest request;
-    private PendingIntent pendingIntent;
+    @Override
+    public void onReceive(Context context, Intent intent) {
+          Log.d(TAG, "onReceive");
 
+          if (ActivityTransitionResult.hasResult(intent)) {
+              ActivityTransitionResult result = ActivityTransitionResult.extractResult(intent);
+              for (ActivityTransitionEvent event : result.getTransitionEvents()) {
+                  Date currentDate = new Date();
+                  JSONObject message = new JSONObject();
+                  JSONObject eventData = new JSONObject();
 
-    public ActivityDetection (Context context) {
+                  /* Log.d(TAG, "activity type: " + event.getActivityType());
+                  Log.d(TAG, "transition type: " + event.getTransitionType());
+                  Log.d(TAG, "elapsed real time: " + convertNsToMs(event.getElapsedRealTimeNanos()));
+                  Log.d(TAG, "current time: " + currentDate.getTime()); */
 
-        // Save context
-        this.mContext = context;
+                  long timestamp = currentDate.getTime() - (SystemClock.elapsedRealtime() - convertNsToMs(event.getElapsedRealTimeNanos()));
 
-        // Initialize transitions and add all available activity types
-        this.transitions = new ArrayList<>();
-        for (int activityType : availableActivityTypes) {
-            // Adding enter and exit transition for each activity type
-            this.transitions.add(
-                    new ActivityTransition.Builder()
-                        .setActivityType(activityType)
-                        .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_ENTER)
-                        .build()
-            );
-            this.transitions.add(
-                    new ActivityTransition.Builder()
-                            .setActivityType(activityType)
-                            .setActivityTransition(ActivityTransition.ACTIVITY_TRANSITION_EXIT)
-                            .build()
-            );
+                  try {
+                      // Build event data
+                      eventData.put("detectedActivities", getDetectedActivities(event.getActivityType()));
+                      eventData.put("transitionType", getTransitionTypeLiteral(event.getTransitionType()));
+                      eventData.put("timestamp", getDateString(new Date(timestamp)));
+
+                      // Build message
+                      message.put("eventName", eventName);
+                      message.put("eventData", eventData);
+
+                      triggerJsEvent(message);
+                  } catch (JSONException e) {
+                      Log.e(TAG, e.getMessage());
+                  }
+              }
+          }
+    }
+
+    private String getTransitionTypeLiteral (int transitionType) {
+        switch (transitionType) {
+            case ActivityTransition.ACTIVITY_TRANSITION_ENTER:
+                return "ACTIVITY_TRANSITION_ENTER";
+            case ActivityTransition.ACTIVITY_TRANSITION_EXIT:
+                return "ACTIVITY_TRANSITION_EXIT";
+            default:
+                return "UNKNOWN";
+
+        }
+    }
+
+    private JSONArray getDetectedActivities (int activityType) {
+        JSONArray detectedActivities = new JSONArray();
+
+        switch (activityType) {
+            case DetectedActivity.IN_VEHICLE:
+                detectedActivities.put("IN_VEHICLE");
+                break;
+            case DetectedActivity.ON_BICYCLE:
+                detectedActivities.put("ON_BICYCLE");
+                break;
+            case DetectedActivity.RUNNING:
+                detectedActivities.put("RUNNING");
+                break;
+            case DetectedActivity.STILL:
+                detectedActivities.put("STILL");
+                break;
+            case DetectedActivity.WALKING:
+                detectedActivities.put("WALKING");
+                break;
+            default:
+                detectedActivities.put("UNKNOWN");
         }
 
-        // Initialize activity transition request
-        this.request = new ActivityTransitionRequest(this.transitions);
+        return detectedActivities;
     }
 
-    public void startCapture (CallbackContext callbackContext) {
-        // Initialize pending intent
-        Intent intent = new Intent(this.mContext, ActivityDetectionReceiver.class);
-        pendingIntent = PendingIntent.getBroadcast(
-                this.mContext,
-                0,
-                intent,
-                0);
+    private String getDateString(Date date) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-        Task<Void> task = ActivityRecognition.getClient(this.mContext)
-                .requestActivityTransitionUpdates(this.request, this.pendingIntent);
-
-        task.addOnSuccessListener(
-                new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        callbackContext.success("Activity detection started successfully");
-                        // Log.d(TAG, "Activity detection started successfully");
-                    }
-                }
-        );
-
-        task.addOnFailureListener(
-                new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        callbackContext.error("Activity detection did not start due an error");
-                        // Log.d(TAG, "Activity detection did not start due an error");
-                        Log.e(TAG, e.getMessage());
-                    }
-                }
-        );
+        return formatter.format(date);
     }
 
-    public void stopCapture (CallbackContext callbackContext) {
-        Task<Void> task = ActivityRecognition.getClient(this.mContext)
-                .removeActivityTransitionUpdates(this.pendingIntent);
-
-        task.addOnSuccessListener(
-                new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        pendingIntent.cancel();
-                        callbackContext.success("Activity detection stopped successfully");
-                        // Log.d(TAG, "Activity detection stopped successfully");
-                    }
-                }
-        );
-
-        task.addOnFailureListener(
-                new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        callbackContext.error("Activity detection did not stop due an error");
-                        // Log.d(TAG, "Activity detection did not stop due an error");
-                        Log.e(TAG, e.getMessage());
-                    }
-                }
-        );
+    private long convertNsToMs(long ns) {
+        return ns/1000000;
     }
 
-    public void setEventsCallbackContext (CallbackContext callbackContext) {
-        ActivityDetectionReceiver.eventsCallbackContext = callbackContext;
+    public void triggerJsEvent(JSONObject message) {
+        if (eventsCallbackContext != null) {
+            PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, message);
+            pluginResult.setKeepCallback(true);
+            eventsCallbackContext.sendPluginResult(pluginResult);
+        }
     }
 }
