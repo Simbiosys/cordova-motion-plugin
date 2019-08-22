@@ -33,27 +33,51 @@ MotionPlugin.prototype.stopAccelerometerCapture = function (successCallback, err
 
 // Significant motion sensor (Android only)
 MotionPlugin.prototype.enableSignificantMotionTrigger = function (successCallback, errorCallback) {
+  if (cordova.platformId !== 'android') {
+    errorCallback('Method only available on Android')
+    return
+  }
   exec(successCallback, errorCallback, 'MotionPlugin', 'startSensorCapture', [this.sensorTypes.SIGNIFICANT_MOTION])
 }
 
 MotionPlugin.prototype.disableSignificantMotionTrigger = function (successCallback, errorCallback) {
+  if (cordova.platformId !== 'android') {
+    errorCallback('Method only available on Android')
+    return
+  }
   exec(successCallback, errorCallback, 'MotionPlugin', 'stopSensorCapture', [this.sensorTypes.SIGNIFICANT_MOTION])
 }
 
 MotionPlugin.prototype.enableTriggerAfterEvent = function (successCallback, errorCallback) {
+  if (cordova.platformId !== 'android') {
+    errorCallback('Method only available on Android')
+    return
+  }
   exec(successCallback, errorCallback, 'MotionPlugin', 'enableTriggerAfterEvent', [this.sensorTypes.SIGNIFICANT_MOTION])
 }
 
 MotionPlugin.prototype.disableTriggerAfterEvent = function (successCallback, errorCallback) {
+  if (cordova.platformId !== 'android') {
+    errorCallback('Method only available on Android')
+    return
+  }
   exec(successCallback, errorCallback, 'MotionPlugin', 'disableTriggerAfterEvent', [this.sensorTypes.SIGNIFICANT_MOTION])
 }
 
 // Linear accelerometer (Android & iOS)
 MotionPlugin.prototype.startLinearAccelerometerCapture = function (successCallback, errorCallback) {
+  if (cordova.platformId !== 'android') {
+    errorCallback('Method only available on Android by the moment. iOS availability comming soon.')
+    return
+  }
   exec(successCallback, errorCallback, 'MotionPlugin', 'startSensorCapture', [this.sensorTypes.LINEAR_ACCELEROMETER])
 }
 
 MotionPlugin.prototype.stopLinearAccelerometerCapture = function (successCallback, errorCallback) {
+  if (cordova.platformId !== 'android') {
+    errorCallback('Method only available on Android by the moment. iOS availability comming soon.')
+    return
+  }
   exec(successCallback, errorCallback, 'MotionPlugin', 'stopSensorCapture', [this.sensorTypes.LINEAR_ACCELEROMETER])
 }
 
@@ -66,7 +90,12 @@ MotionPlugin.prototype.stopActivityDetectionCapture = function (successCallback,
   exec(successCallback, errorCallback, 'MotionPlugin', 'stopSensorCapture', [this.sensorTypes.ACTIVITY_DETECTION])
 }
 
+// iOS only
 MotionPlugin.prototype.getActivityLog = function (fromDate, toDate, successCallback, errorCallback) {
+  if (cordova.platformId !== 'ios') {
+    errorCallback('Method only available on iOS')
+    return
+  }
   exec(successCallback, errorCallback, 'MotionPlugin', 'getActivityLog', [fromDate, toDate])
 }
 
