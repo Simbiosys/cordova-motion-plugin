@@ -59,26 +59,42 @@ class ActivityDetection {
         if activity!.stationary {
             detectedActivities.append("STILL")
         }
+        if activity!.unknown {
+            detectedActivities.append("UNKNOWN")
+        }
         
         let message: [AnyHashable : Any] = [
             "eventName": self.eventName,
             "eventData": [
                 "detectedActivities": detectedActivities,
-                "timestamp": self.getTimestamp()
+                "timestamp": self.getDateString(from: activity!.startDate),
+                "confidence": self.getConfidenceString(from: activity!.confidence)
             ]
         ]
         // Trigger event
         self.triggerJsEvent(message)
     }
     
-    func getTimestamp() -> String {
-        let now = Date()
+    func getDateString(from: Date) -> String {
         let formatter = DateFormatter()
         formatter.timeZone = TimeZone.current
         formatter.dateFormat = "yyyy-MM-dd HH:mm"
         
-        let dateString = formatter.string(from: now)
+        let dateString = formatter.string(from: from)
         return dateString
+    }
+    
+    func getConfidenceString(from: CMMotionActivityConfidence) -> String {
+        switch from {
+        case CMMotionActivityConfidence.high:
+            return "HIGH"
+        case CMMotionActivityConfidence.medium:
+            return "MEDIUM"
+        case CMMotionActivityConfidence.low:
+            return "LOW"
+        default:
+            return "UNKNOWN"
+        }
     }
     
     func triggerJsEvent(_ message: [AnyHashable : Any], resultOk: Bool = true) {
