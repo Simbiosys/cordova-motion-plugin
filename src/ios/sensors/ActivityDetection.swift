@@ -35,40 +35,50 @@ class ActivityDetection {
         return (CDVCommandStatus_OK, "Activity detection stopped successfully")
     }
     
-    func motionActivityHandler (activity: Optional<CMMotionActivity>) {
-        print("IN_VEHICLE: \(activity?.automotive ?? false)")
+    func motionActivityHandler(activity: Optional<CMMotionActivity>) {
+        /* print("IN_VEHICLE: \(activity?.automotive ?? false)")
         print("ON_BICYCLE: \(activity?.cycling ?? false)")
         print("RUNNING: \(activity?.running ?? false)")
         print("WALKING: \(activity?.walking ?? false)")
-        print("STILL: \(activity?.stationary ?? false)")
+        print("STILL: \(activity?.stationary ?? false)") */
         
-        var activityString = ""
+        var detectedActivities: [String] = []
         
         if activity!.automotive {
-            activityString += "|IN_VEHICLE|"
+            detectedActivities.append("IN_VEHICLE")
         }
         if activity!.cycling {
-            activityString += "|ON_BICYCLE|"
+            detectedActivities.append("ON_BICYCLE")
         }
         if activity!.running {
-            activityString += "|RUNNING|"
+            detectedActivities.append("RUNNING")
         }
         if activity!.walking {
-            activityString += "|WALKING|"
+            detectedActivities.append("WALKING")
         }
         if activity!.stationary {
-            activityString += "|STILL|"
+            detectedActivities.append("STILL")
         }
         
         let message: [AnyHashable : Any] = [
             "eventName": self.eventName,
             "eventData": [
-                "activityType": activityString,
-                "transitionType": "-"
+                "detectedActivities": detectedActivities,
+                "timestamp": self.getTimestamp()
             ]
         ]
         // Trigger event
         self.triggerJsEvent(message)
+    }
+    
+    func getTimestamp() -> String {
+        let now = Date()
+        let formatter = DateFormatter()
+        formatter.timeZone = TimeZone.current
+        formatter.dateFormat = "yyyy-MM-dd HH:mm"
+        
+        let dateString = formatter.string(from: now)
+        return dateString
     }
     
     func triggerJsEvent(_ message: [AnyHashable : Any], resultOk: Bool = true) {
