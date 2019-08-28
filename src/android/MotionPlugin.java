@@ -1,6 +1,7 @@
 package es.simbiosys.cordova.plugin.motion;
 
 import android.hardware.Sensor;
+import android.util.Log;
 
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
@@ -192,5 +193,17 @@ public class MotionPlugin extends CordovaPlugin {
       default:
         callbackContext.error("Unknown sensor");
     }
+  }
+
+  @Override
+  public void onDestroy() {
+    Log.d(TAG, "onDestroy()");
+
+    // Stop activity transition recognition API
+    if (activityDetectionSensor != null) {
+      activityDetectionSensor.stopCapture(null);
+    }
+
+    super.onDestroy();
   }
 }
