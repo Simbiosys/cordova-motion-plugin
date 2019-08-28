@@ -71,7 +71,7 @@ public class ActivityDetection {
                 this.mContext,
                 0,
                 intent,
-                0);
+                PendingIntent.FLAG_UPDATE_CURRENT);
 
         Task<Void> task = ActivityRecognition.getClient(this.mContext)
                 .requestActivityTransitionUpdates(this.request, this.pendingIntent);
@@ -107,8 +107,10 @@ public class ActivityDetection {
                     @Override
                     public void onSuccess(Void aVoid) {
                         pendingIntent.cancel();
-                        callbackContext.success("Activity detection stopped successfully");
-                        // Log.d(TAG, "Activity detection stopped successfully");
+                        if (callbackContext != null) {
+                            callbackContext.success("Activity detection stopped successfully");
+                        }
+                        Log.d(TAG, "Activity detection stopped successfully");
                     }
                 }
         );
@@ -117,8 +119,9 @@ public class ActivityDetection {
                 new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        callbackContext.error("Activity detection did not stop due an error");
-                        // Log.d(TAG, "Activity detection did not stop due an error");
+                        if (callbackContext != null) {
+                            callbackContext.error("Activity detection did not stop due an error");
+                        }
                         Log.e(TAG, e.getMessage());
                     }
                 }
