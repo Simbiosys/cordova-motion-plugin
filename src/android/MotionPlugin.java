@@ -135,7 +135,12 @@ public class MotionPlugin extends CordovaPlugin {
           return;
         }
 
-        activityDetectionSensor.startCapture(callbackContext);
+        cordova.getThreadPool().execute(new Runnable() {
+          @Override
+          public void run() {
+            activityDetectionSensor.startCapture(callbackContext);
+          }
+        });
         break;
       default:
         callbackContext.error("Unknown sensor");
