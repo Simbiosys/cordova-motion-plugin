@@ -99,4 +99,13 @@ MotionPlugin.prototype.getActivityLog = function (fromDate, toDate, successCallb
   exec(successCallback, errorCallback, 'MotionPlugin', 'getActivityLog', [fromDate, toDate])
 }
 
+// Android only
+MotionPlugin.prototype.setActivityDetectionEventsWithLocation = function (eventsWithLocation, successCallback, errorCallback) {
+  if (cordova.platformId !== 'android') {
+    errorCallback('Method only available on Android')
+    return
+  }
+  exec(successCallback, errorCallback, 'MotionPlugin', 'setActivityDetectionEventsWithLocation', [eventsWithLocation])
+}
+
 module.exports = new MotionPlugin()

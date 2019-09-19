@@ -1,15 +1,24 @@
 package es.simbiosys.cordova.plugin.motion.sensors;
 
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.os.SystemClock;
+import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.PermissionChecker;
 import android.util.Log;
 
 import com.google.android.gms.location.ActivityTransition;
 import com.google.android.gms.location.ActivityTransitionEvent;
 import com.google.android.gms.location.ActivityTransitionResult;
 import com.google.android.gms.location.DetectedActivity;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.PluginResult;
@@ -26,6 +35,7 @@ public class ActivityDetectionReceiver extends BroadcastReceiver {
     private static final String eventName = "onActivityDetection";
 
     public static CallbackContext eventsCallbackContext;
+    public static FusedLocationProviderClient fusedLocationClient;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -35,7 +45,7 @@ public class ActivityDetectionReceiver extends BroadcastReceiver {
               ActivityTransitionResult result = ActivityTransitionResult.extractResult(intent);
               for (ActivityTransitionEvent event : result.getTransitionEvents()) {
                   Date currentDate = new Date();
-                  JSONObject message = new JSONObject();
+                  // JSONObject message = new JSONObject();
                   JSONObject eventData = new JSONObject();
 
                   /* Log.d(TAG, "activity type: " + event.getActivityType());
@@ -52,10 +62,38 @@ public class ActivityDetectionReceiver extends BroadcastReceiver {
                       eventData.put("timestamp", getDateString(new Date(timestamp)));
 
                       // Build message
-                      message.put("eventName", eventName);
-                      message.put("eventData", eventData);
+                      // message.put("eventName", eventName);
+                      // message.put("eventData", eventData);
 
-                      triggerJsEvent(message);
+                      if (fusedLocationClient != null
+                              && ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PermissionChecker.PERMISSION_GRANTED) {
+                          fusedLocationClient.getLastLocation()
+                                  .addOnSuccessListener(new OnSuccessListener<Location>() {
+                                      @Override
+                                      public void onSuccess(Location location) {
+                                          if (location != null) {
+                                              try {
+                                                  eventData.put("latitude", location.getLatitude());
+                                                  eventData.put("longitude", location.getLongitude());
+
+                                              } catch (JSONException e) {
+                                                  Log.e(TAG, e.getMessage());
+                                              }
+                                          }
+                                          triggerJsEvent(eventData);
+                                      }
+                                  })
+                                  .addOnFailureListener(new OnFailureListener() {
+                                      @Override
+                                      public void onFailure(@NonNull Exception e) {
+                                          Log.e(TAG, e.getMessage());
+
+                                          triggerJsEvent(eventData);
+                                      }
+                                  });
+                      } else {
+                          triggerJsEvent(eventData);
+                      }
                   } catch (JSONException e) {
                       Log.e(TAG, e.getMessage());
                   }
@@ -111,11 +149,21 @@ public class ActivityDetectionReceiver extends BroadcastReceiver {
         return ns/1000000;
     }
 
-    public void triggerJsEvent(JSONObject message) {
-        if (eventsCallbackContext != null) {
-            PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, message);
-            pluginResult.setKeepCallback(true);
-            eventsCallbackContext.sendPluginResult(pluginResult);
+    public void triggerJsEvent(JSONObject eventData) {
+        JSONObject message = new JSONObject();
+
+        try {
+            // Build message
+            message.put("eventName", eventName);
+            message.put("eventData", eventData);
+
+            if (eventsCallbackContext != null) {
+                PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, message);
+                pluginResult.setKeepCallback(true);
+                eventsCallbackContext.sendPluginResult(pluginResult);
+            }
+        } catch (JSONException e) {
+            Log.e(TAG, e.getMessage());
         }
     }
 }

@@ -88,6 +88,12 @@ public class MotionPlugin extends CordovaPlugin {
       callbackContext.success("Trigger will be disabled after event is triggered");
 
       return true;
+    } else if (action.equals("setActivityDetectionEventsWithLocation")) {
+      boolean withLocation = args.optBoolean(0);
+      activityDetectionSensor.setFusedLocationClient(withLocation);
+      callbackContext.success("Activity detection events will return location coordinates");
+
+      return true;
     }
 
     return false;

@@ -10,6 +10,8 @@ import com.google.android.gms.location.ActivityRecognition;
 import com.google.android.gms.location.ActivityTransition;
 import com.google.android.gms.location.ActivityTransitionRequest;
 import com.google.android.gms.location.DetectedActivity;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -130,5 +132,9 @@ public class ActivityDetection {
 
     public void setEventsCallbackContext (CallbackContext callbackContext) {
         ActivityDetectionReceiver.eventsCallbackContext = callbackContext;
+    }
+
+    public void setFusedLocationClient (boolean withLocation) {
+        ActivityDetectionReceiver.fusedLocationClient = withLocation ? LocationServices.getFusedLocationProviderClient(mContext) : null;
     }
 }
