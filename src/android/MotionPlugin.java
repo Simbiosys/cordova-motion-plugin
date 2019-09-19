@@ -22,6 +22,7 @@ public class MotionPlugin extends CordovaPlugin {
 
   private static final String TAG = "MotionPlugin";
   private static final int ACTIVITY_DETECTION_ID = 0;
+  private static final int ACTIVITY_RECOGNITION_ID = 22;
 
   private Accelerometer accelerometerSensor;
   private SignificantMotion significantMotionSensor;
@@ -149,6 +150,19 @@ public class MotionPlugin extends CordovaPlugin {
           }
         });
         break;
+      case ACTIVITY_RECOGNITION_ID:
+        if (activityDetectionSensor == null) {
+          callbackContext.error("No activity detection sensor");
+          return;
+        }
+
+        cordova.getThreadPool().execute(new Runnable() {
+          @Override
+          public void run() {
+            activityDetectionSensor.startPolling(callbackContext);
+          }
+        });
+        break;
       default:
         callbackContext.error("Unknown sensor");
     }
@@ -193,6 +207,19 @@ public class MotionPlugin extends CordovaPlugin {
           @Override
           public void run() {
             activityDetectionSensor.stopCapture(callbackContext);
+          }
+        });
+        break;
+      case ACTIVITY_RECOGNITION_ID:
+        if (activityDetectionSensor == null) {
+          callbackContext.error("No activity detection sensor");
+          return;
+        }
+
+        cordova.getThreadPool().execute(new Runnable() {
+          @Override
+          public void run() {
+            activityDetectionSensor.stopPolling(callbackContext);
           }
         });
         break;

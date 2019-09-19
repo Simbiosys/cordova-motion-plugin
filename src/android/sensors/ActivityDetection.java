@@ -10,7 +10,6 @@ import com.google.android.gms.location.ActivityRecognition;
 import com.google.android.gms.location.ActivityTransition;
 import com.google.android.gms.location.ActivityTransitionRequest;
 import com.google.android.gms.location.DetectedActivity;
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -100,6 +99,38 @@ public class ActivityDetection {
         );
     }
 
+    public void startPolling (CallbackContext callbackContext) {
+        // Initialize pending intent
+        Intent intent = new Intent(mContext, ActivityDetectionService.class);
+        pendingIntent = PendingIntent.getService(
+                mContext,
+                0,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+        );
+
+        Task<Void> task = ActivityRecognition.getClient(this.mContext)
+                .requestActivityUpdates(10_000L, pendingIntent);
+
+        task.addOnSuccessListener(
+                new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        callbackContext.success("Activity polling started successfully");
+                    }
+                }
+        );
+        task.addOnFailureListener(
+                new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        callbackContext.error("Activity polling did not start due an error");
+                        Log.e(TAG, e.getMessage());
+                    }
+                }
+        );
+    }
+
     public void stopCapture (CallbackContext callbackContext) {
         Task<Void> task = ActivityRecognition.getClient(this.mContext)
                 .removeActivityTransitionUpdates(this.pendingIntent);
@@ -123,6 +154,36 @@ public class ActivityDetection {
                     public void onFailure(@NonNull Exception e) {
                         if (callbackContext != null) {
                             callbackContext.error("Activity detection did not stop due an error");
+                        }
+                        Log.e(TAG, e.getMessage());
+                    }
+                }
+        );
+    }
+
+    public void stopPolling (CallbackContext callbackContext) {
+        Task<Void> task = ActivityRecognition.getClient(this.mContext)
+                .removeActivityUpdates(this.pendingIntent);
+
+        task.addOnSuccessListener(
+                new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        pendingIntent.cancel();
+                        if (callbackContext != null) {
+                            callbackContext.success("Activity polling stopped successfully");
+                        }
+                        Log.d(TAG, "Activity polling stopped successfully");
+                    }
+                }
+        );
+
+        task.addOnFailureListener(
+                new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        if (callbackContext != null) {
+                            callbackContext.error("Activity polling did not stop due an error");
                         }
                         Log.e(TAG, e.getMessage());
                     }

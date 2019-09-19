@@ -7,7 +7,8 @@ function MotionPlugin () {
     ACTIVITY_DETECTION: 0,
     ACCELEROMETER: 1,
     LINEAR_ACCELEROMETER: 10,
-    SIGNIFICANT_MOTION: 17
+    SIGNIFICANT_MOTION: 17,
+    ACTIVITY_RECOGNITION: 22
   }
 }
 
@@ -106,6 +107,15 @@ MotionPlugin.prototype.setActivityDetectionEventsWithLocation = function (events
     return
   }
   exec(successCallback, errorCallback, 'MotionPlugin', 'setActivityDetectionEventsWithLocation', [eventsWithLocation])
+}
+
+// Activity recognition (Android & iOS)
+MotionPlugin.prototype.startActivityDetectionPolling = function (successCallback, errorCallback) {
+  exec(successCallback, errorCallback, 'MotionPlugin', 'startSensorCapture', [this.sensorTypes.ACTIVITY_RECOGNITION])
+}
+
+MotionPlugin.prototype.stopActivityDetectionPolling = function (successCallback, errorCallback) {
+  exec(successCallback, errorCallback, 'MotionPlugin', 'stopSensorCapture', [this.sensorTypes.ACTIVITY_RECOGNITION])
 }
 
 module.exports = new MotionPlugin()
