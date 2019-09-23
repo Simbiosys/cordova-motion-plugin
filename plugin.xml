@@ -49,6 +49,7 @@
       <source-file src="src/android/sensors/LinearAccelerometer.java" target-dir="src/es/simbiosys/cordova/plugin/motion/sensors" />
       <source-file src="src/android/sensors/ActivityDetection.java" target-dir="src/es/simbiosys/cordova/plugin/motion/sensors" />
       <source-file src="src/android/sensors/ActivityDetectionReceiver.java" target-dir="src/es/simbiosys/cordova/plugin/motion/sensors" />
+      <source-file src="src/android/sensors/ActivityDetectionService.java" target-dir="src/es/simbiosys/cordova/plugin/motion/sensors" />
 
       <!-- android dependencies -->
       <framework src="com.google.android.gms:play-services-location:12.0.0" />
