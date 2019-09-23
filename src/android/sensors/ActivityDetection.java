@@ -110,7 +110,7 @@ public class ActivityDetection {
         );
 
         Task<Void> task = ActivityRecognition.getClient(this.mContext)
-                .requestActivityUpdates(10_000L, pendingIntent);
+                .requestActivityUpdates(0, pendingIntent);
 
         task.addOnSuccessListener(
                 new OnSuccessListener<Void>() {
@@ -193,6 +193,7 @@ public class ActivityDetection {
 
     public void setEventsCallbackContext (CallbackContext callbackContext) {
         ActivityDetectionReceiver.eventsCallbackContext = callbackContext;
+        ActivityDetectionService.eventsCallbackContext = callbackContext;
     }
 
     public void setFusedLocationClient (boolean withLocation) {
