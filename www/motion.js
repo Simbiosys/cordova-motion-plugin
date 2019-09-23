@@ -109,12 +109,20 @@ MotionPlugin.prototype.setActivityDetectionEventsWithLocation = function (events
   exec(successCallback, errorCallback, 'MotionPlugin', 'setActivityDetectionEventsWithLocation', [eventsWithLocation])
 }
 
-// Activity recognition (Android & iOS)
+// Activity recognition (Android only)
 MotionPlugin.prototype.startActivityDetectionPolling = function (successCallback, errorCallback) {
+  if (cordova.platformId !== 'android') {
+    errorCallback('Method only available on Android')
+    return
+  }
   exec(successCallback, errorCallback, 'MotionPlugin', 'startSensorCapture', [this.sensorTypes.ACTIVITY_RECOGNITION])
 }
 
 MotionPlugin.prototype.stopActivityDetectionPolling = function (successCallback, errorCallback) {
+  if (cordova.platformId !== 'android') {
+    errorCallback('Method only available on Android')
+    return
+  }
   exec(successCallback, errorCallback, 'MotionPlugin', 'stopSensorCapture', [this.sensorTypes.ACTIVITY_RECOGNITION])
 }
 
