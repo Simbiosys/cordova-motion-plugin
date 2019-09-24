@@ -1,11 +1,19 @@
 package es.simbiosys.cordova.plugin.motion.sensors;
 
+import android.Manifest;
 import android.app.IntentService;
 import android.content.Intent;
+import android.location.Location;
+import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.PermissionChecker;
 import android.util.Log;
 
 import com.google.android.gms.location.ActivityRecognitionResult;
 import com.google.android.gms.location.DetectedActivity;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.PluginResult;
@@ -22,6 +30,7 @@ public class ActivityDetectionService extends IntentService {
     private static final String eventName = "onActivityRecognition";
 
     public static CallbackContext eventsCallbackContext;
+    public static FusedLocationProviderClient fusedLocationClient;
 
     public ActivityDetectionService () {
         super("ActivityDetectionService");
@@ -46,7 +55,47 @@ public class ActivityDetectionService extends IntentService {
                 eventData.put("confidence", activity.getConfidence());
                 eventData.put("timestamp", getDateString(new Date()));
 
-                triggerJsEvent(eventData);
+                /* if (fusedLocationClient != null) {
+                    Log.d(TAG, "fusedLocationClient != null");
+                } else {
+                    Log.d(TAG, "fusedLocationClient == null");
+                }
+
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PermissionChecker.PERMISSION_GRANTED) {
+                    Log.d(TAG, "permission granted");
+                } else {
+                    Log.d(TAG, "permission NOT granted");
+                } */
+
+                if (fusedLocationClient != null
+                    && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PermissionChecker.PERMISSION_GRANTED) {
+                    fusedLocationClient.getLastLocation()
+                            .addOnSuccessListener(new OnSuccessListener<Location>() {
+                                @Override
+                                public void onSuccess(Location location) {
+                                    if (location != null) {
+                                        try {
+                                            eventData.put("latitude", location.getLatitude());
+                                            eventData.put("longitude", location.getLongitude());
+
+                                        } catch (JSONException e) {
+                                            Log.e(TAG, e.getMessage());
+                                        }
+                                    }
+                                    triggerJsEvent(eventData);
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.e(TAG, e.getMessage());
+
+                                    triggerJsEvent(eventData);
+                                }
+                            });
+                } else {
+                    triggerJsEvent(eventData);
+                }
             } catch (JSONException e) {
                 Log.e(TAG, e.getMessage());
             }

@@ -10,6 +10,7 @@ import com.google.android.gms.location.ActivityRecognition;
 import com.google.android.gms.location.ActivityTransition;
 import com.google.android.gms.location.ActivityTransitionRequest;
 import com.google.android.gms.location.DetectedActivity;
+import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -201,7 +202,16 @@ public class ActivityDetection {
     }
 
     public void setFusedLocationClient (boolean withLocation) {
-        ActivityDetectionReceiver.fusedLocationClient = withLocation ? LocationServices.getFusedLocationProviderClient(mContext) : null;
+        if (withLocation) {
+            FusedLocationProviderClient client = LocationServices.getFusedLocationProviderClient(mContext);
+            ActivityDetectionReceiver.fusedLocationClient = client;
+            ActivityDetectionService.fusedLocationClient = client;
+
+            return;
+        }
+
+        ActivityDetectionReceiver.fusedLocationClient = null;
+        ActivityDetectionService.fusedLocationClient = null;
     }
 
     public void setDetectionIntervalMillis (long detectionIntervalMillis) {
