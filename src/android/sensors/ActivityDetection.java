@@ -36,6 +36,7 @@ public class ActivityDetection {
     private List<ActivityTransition> transitions;
     private ActivityTransitionRequest request;
     private PendingIntent pendingIntent;
+    private long detectionIntervalMillis;
 
 
     public ActivityDetection (Context context) {
@@ -63,6 +64,9 @@ public class ActivityDetection {
 
         // Initialize activity transition request
         this.request = new ActivityTransitionRequest(this.transitions);
+
+        // Initialize activity recognition detection interval to default value
+        this.detectionIntervalMillis = 0;
     }
 
     public void startCapture (CallbackContext callbackContext) {
@@ -110,7 +114,7 @@ public class ActivityDetection {
         );
 
         Task<Void> task = ActivityRecognition.getClient(this.mContext)
-                .requestActivityUpdates(0, pendingIntent);
+                .requestActivityUpdates(detectionIntervalMillis, pendingIntent);
 
         task.addOnSuccessListener(
                 new OnSuccessListener<Void>() {
@@ -198,5 +202,9 @@ public class ActivityDetection {
 
     public void setFusedLocationClient (boolean withLocation) {
         ActivityDetectionReceiver.fusedLocationClient = withLocation ? LocationServices.getFusedLocationProviderClient(mContext) : null;
+    }
+
+    public void setDetectionIntervalMillis (long detectionIntervalMillis) {
+        this.detectionIntervalMillis = detectionIntervalMillis;
     }
 }

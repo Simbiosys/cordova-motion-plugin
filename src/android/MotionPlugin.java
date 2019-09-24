@@ -95,6 +95,10 @@ public class MotionPlugin extends CordovaPlugin {
       callbackContext.success("Activity detection events will return location coordinates");
 
       return true;
+    } else if (action.equals("setDetectionIntervalMillis")) {
+      long detectionIntervalMillis = args.optLong(0);
+      activityDetectionSensor.setDetectionIntervalMillis(detectionIntervalMillis);
+      callbackContext.success("Detection interval set to " + detectionIntervalMillis + " ms");
     }
 
     return false;

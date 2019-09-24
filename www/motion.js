@@ -126,4 +126,12 @@ MotionPlugin.prototype.stopActivityDetectionPolling = function (successCallback,
   exec(successCallback, errorCallback, 'MotionPlugin', 'stopSensorCapture', [this.sensorTypes.ACTIVITY_RECOGNITION])
 }
 
+MotionPlugin.prototype.setDetectionIntervalMillis = function (detectionIntervalMillis, successCallback, errorCallback) {
+  if (cordova.platformId !== 'android') {
+    errorCallback('Method only available on Android')
+    return
+  }
+  exec(successCallback, errorCallback, 'MotionPlugin', 'setDetectionIntervalMillis', [detectionIntervalMillis])
+}
+
 module.exports = new MotionPlugin()
