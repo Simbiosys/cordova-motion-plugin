@@ -1,13 +1,13 @@
 # cordova-motion-plugin #
 
-## WARNING: ##
-Documentation under construction :building_construction:
-
 This plugin provides methods to get data from device accelerometer and motion sensors. The plugin allows you to:
 * Detect activity changes.
 * Monitor activity (Android only).
 * Get a log of activities performed between two dates (iOS only).
 * Get raw data from device accelerometer along X,Y,Z axis.
+
+## WARNING: ##
+:construction: Documentation under construction :building_construction:
 
 ## Installation ##
 ```
