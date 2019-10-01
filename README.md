@@ -42,7 +42,7 @@ motionPlugin.startActivityDetectionCapture(function (pluginResponse) {
 ```
 
 #### Activity change event ####
-Once capture is started, the plugin will trigger an `onActivityDetection` event every time an activity change is detected.
+Once capture is started, the plugin will trigger an `onActivityDetection` event each time an activity change is detected.
 
 ```
 document.addEventListener('onActivityDetection', function (eventData) {
@@ -72,6 +72,7 @@ motionPlugin.stopActivityDetectionCapture(function (pluginResponse) {
   })
 ```
 
+
 ## <a id="activitytypes"></a> Detected activity identifiers ##
 The `detectedActivities` array obtained in activity detection and recognition events contains string identifiers of the detected activities. These identifiers are:
 * *STILL*. The device is still (not moving).
@@ -81,3 +82,68 @@ The `detectedActivities` array obtained in activity detection and recognition ev
 * *RUNNING*. The device is on a user who is running.
 * *ON_BICYCLE*. 	The device is on a bicycle.
 * *IN_VEHICLE*. The device is in a vehicle, such as a car.
+
+
+## Significant motion detection ##
+Some Android devices are capable of trigger an event each time significant motion is detected. A significant motion is a motion that might lead to a change in the user's location; for example walking, biking, or sitting in a moving car. Once the sensor triggers the event, it disables itself, so it must be enabled again to detect the next significatn motion.
+
+#### Supported platforms ####
+* Android
+
+#### Enable significant motion sensor ####
+To enable significant motion sensor, method `enableSignificantMotionTrigger` must be called.
+```
+motionPlugin.enableSignificantMotionTrigger(function (pluginResponse) {
+  // Motion sensor enabled successfully
+}, function (error) {
+  // Something went wrong
+})
+```
+
+#### Significant motion event ####
+When device detects a significant motion, this plugin will trigger an `onSignificantMotion` event.
+```
+document.addEventListener('onSignificantMotion', function () {
+  console.log('onSignificantMotion')
+
+  // Do work
+}, false)
+```
+There is no information about the nature of the significant motion, the device only triggers the event when detect one.
+
+#### Disable significant motion sensor ####
+To disable significant motion sensor, method `disableSignificantMotionTrigger` must be called.
+```
+motionPlugin.disableSignificantMotionTrigger(function (pluginResponse) {
+  // Motion sensor disabled successfully
+}, function (error) {
+  // Something went wrong
+})
+```
+
+#### Re-enable significant motion sensor after event ####
+The sensor disables itself after detect a significant motion and trigger the event. But this plugin allows to enable it again automatically. To do this, method `enableTriggerAfterEvent` must be called before enabling the sensor. You can call `enableTriggerAfterEvent` and in the success callback enable sensor through `enableSignificantMotionTrigger`.
+
+```
+motionPlugin.enableSignificantMotionTrigger(function (pluginResponse) {
+  // Significant motion sensor will be re-enabled automatically after event
+
+  // Enable sensor
+  motionPlugin.enableTriggerAfterEvent(function (pluginResponse) {
+    // Motion sensor enabled successfully
+  }, function (error) {
+    // Something went wrong
+  })
+}, function (error) {
+  // Something went wrong
+})
+```
+
+This _automatic re-enabling_ can be undone at any time by calling the `disableTriggerAfterEvent`.
+```
+motionPlugin.disableTriggerAfterEvent(function (pluginResponse) {
+  // Significant motion sensor will disable it self after trigger event
+}, function (error) {
+  // Something went wrong
+})
+```
