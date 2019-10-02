@@ -44,7 +44,7 @@ motionPlugin.startActivityDetectionCapture(function (pluginResponse) {
   })
 ```
 
-#### Activity change event ####
+#### <a id="activitydetectionevent"></a> Activity change event ####
 Once capture is started, the plugin will trigger an `onActivityDetection` event each time an activity change is detected.
 
 ```
@@ -63,6 +63,8 @@ The `eventData` object is a bit different depending on the platform. Consits of 
 * `transitionType` (Android only). A string with value *ACTIVITY_TRANSITION_ENTER* if the user starts the activity or *ACTIVITY_TRANSITION_EXIT* if the stops doing it.
 * `confidence` (iOS only). The confidence in the assessment of the detected activity. Its value can be *LOW*, *MEDIUM* or *HIGH*.
 * `timestamp` (Android & iOS). Timestamp indicating when the event is detected. Format _YYYY-MM-DD HH:mm:ss_.
+* `latitude` (Android, optional). Latitude where the device is when the activity change is detected. See [Activity events with location](#activityeventswithlocation) section to know how to get this property within event data.
+* `longitude` (Android, optional). Longitude where the device is when the activity change is detected. See [Activity events with location](#activityeventswithlocation) section to know how to get this property within event data.
 
 #### Stop capturing events ####
 To stop capturing activity change events the `stopActivityDetectionCapture` must be called.
@@ -190,7 +192,7 @@ function (error) {
 }
 ```
 
-#### Activity recognition event ####
+#### <a id="activityrecognitionevent"></a> Activity recognition event ####
 Once capture is started, the plugin will trigger an `onActivityRecognition` event each time the device responds with the recognized activity.
 
 ```
@@ -205,6 +207,8 @@ The `eventData` object consits of a JSON object with the following properties:
 * `detectedActivities`. An array containing the [recognized activity](#activitytypes). It will always be an array of only one element.
 * `confidence`. The confidence in the assessment of the detected activity. Number between 0 and 100.
 * `timestamp`. Timestamp indicating when the activity is recognized. Format _YYYY-MM-DD HH:mm:ss_.
+* `latitude` (Optional). Latitude where the device is when the activity recognition event is triggered. See [Activity events with location](#activityeventswithlocation) section to know how to get this property within event data.
+* `longitude` (Optional). Longitude where the device is when the activity recognition event is triggered. See [Activity events with location](#activityeventswithlocation) section to know how to get this property within event data.
 
 #### Stop activity monitoring ####
 To stop activity monitoring, method `stopActivityDetectionPolling` must be called.
@@ -215,3 +219,46 @@ motionPlugin.stopActivityDetectionPolling(function (pluginResponse) {
   // Something went wrong
 })
 ```
+
+
+## <a id="activityeventswithlocation"></a> Activity events with location ##
+Is possible to get location coordinates (latitude & longitude) within event data from both activity detection and recognition.
+
+#### Supported platforms ####
+* Android
+
+#### Set location coordinates within event data ####
+To make the plugin return latitude and longitude within the detection and recognition activity data, method `setActivityDetectionEventsWithLocation` must be called, **always before starting** the activity detection/recognition sensor. I.e. to get location within the event data, first call the `setActivityDetectionEventsWithLocation` method and in the success callback start the activity detection/monitoring.
+```
+// Example of activity change detection with location initialization
+motionPlugin.setActivityDetectionEventsWithLocation(
+  true,
+  function (pluginResponse) {
+    // Start capture
+    motionPlugin.startActivityDetectionCapture(function (pluginResponse) {
+      // Activity detection started successfully
+    }, function (error) {
+      // Something went wrong
+    })
+  }, function (error) {
+    // Something went wrong
+  })
+
+// Example of activity monitoring with location initialization
+motionPlugin.setActivityDetectionEventsWithLocation(
+  true,
+  function (pluginResponse) {
+    // Start capture
+    motionPlugin.startActivityDetectionPolling(function (pluginResponse) {
+      // Activity monitoring started successfully
+    }, function (error) {
+      // Something went wrong
+    })
+  },
+  function (error) {
+    // Something went wrong
+  }
+)
+```
+
+By doing this, the event data will contain _latitude_ and _longitude_ (as explained in [activity detection event](#activitydetectionevent) and [activity monitoring event](#activityrecognitionevent) sections) properties, with the location of the device at the moment the event is triggered.
