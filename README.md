@@ -150,3 +150,52 @@ motionPlugin.disableTriggerAfterEvent(function (pluginResponse) {
   // Something went wrong
 })
 ```
+
+
+## Monitoring activity ##
+On Android is possible to retrieve activity information periodically. The plugin _asks_ to the device which kind of activity is performing at intervals that can be specified, and triggers a JS event with the response.
+
+#### Supported platforms ####
+* Android
+
+#### Start activity monitoring ####
+To start activity monitoring method `startActivityDetectionPolling` must be called.
+```
+motionPlugin.startActivityDetectionPolling(function (pluginResponse) {
+  // Activity monitoring started successfully
+}, function (error) {
+  // Something went wrong
+})
+```
+
+#### Set polling interval ####
+By default, activity recognition results will be delivered at the fastest possible rate. It is recommended to set the desired time between activity detections. Larger values will result in fewer activity detections while improving battery life.
+
+To set this interval, method `setDetectionIntervalMillis` must be called, passing the interval value in milliseconds. This interval **will only take effect** if method `setDetectionIntervalMillis` is called before start activity monitoring. You can call `setDetectionIntervalMillis` and in the success callback enable activity monitoring through `startActivityDetectionPolling`.
+```
+motionPlugin.setDetectionIntervalMillis(
+  30000,
+  function (pluginResponse) {
+    // Interval set to 30 seconds
+
+    // Start capture
+    motionPlugin.startActivityDetectionPolling(function (pluginResponse) {
+      // Activity monitoring started successfully
+    }, function (error) {
+      // Something went wrong while starting activity monitoring
+    })
+},
+function (error) {
+  // Something went wrong while setting interval
+}
+```
+
+#### Stop activity monitoring ####
+To stop activity monitoring, method `stopActivityDetectionPolling` must be called.
+```
+motionPlugin.stopActivityDetectionPolling(function (pluginResponse) {
+  // Activity monitoring stopped successfully
+}, function (error) {
+  // Something went wrong
+})
+```
