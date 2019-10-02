@@ -14,6 +14,20 @@ This plugin provides methods to get data from device accelerometer and motion se
 cordova plugin add https://github.com/Simbiosys/cordova-motion-plugin
 ```
 
+### iOS Quirks ###
+Since iOS 10 it's mandatory to provide an usage description in the `info.plist` if trying to access privacy-sensitive data. When the system prompts the user to allow access, this usage description string will displayed as part of the permission dialog box, but if you didn't provide the usage description, the app will crash before showing the dialog. Also, Apple will reject apps that access private data but don't provide an usage description.
+
+This plugins requires the following usage descriptions:
+
+* `NSMotionUsageDescription` specifies the reason for your app to access motion data.
+
+To add these entries into the `info.plist`, you can use the `edit-config` tag in the `config.xml` like this:
+```
+<edit-config target="NSMotionUsageDescription" file="*-Info.plist" mode="merge">
+  <string>need motion access to detect user activity and obtain accelerometer data</string>
+</edit-config>
+```
+
 ## Initialization ##
 The plugin defines a global `motionPlugin` object which has all the available methods that will be described in this README. Although the object is in the global scope, it is not available until after the `deviceready` event.
 
