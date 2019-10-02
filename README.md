@@ -295,3 +295,75 @@ The event data consists of a JSON with the following properties:
   * `detectedActivities`. An array containing the [detected activities](#activitytypes). The array can contain several activities but commonly will contain only one.
   * `confidence`. The confidence in the assessment of the detected activity. Its value can be *LOW*, *MEDIUM* or *HIGH*.
   * `timestamp`. Timestamp indicating when the event is detected. Format _YYYY-MM-DD HH:mm:ss_.
+
+
+
+## Accelerometer raw data ##
+This plugin allows to get data directly from the device accelerometer along X,Y,Z axis.
+
+#### Supported platforms ####
+* Android
+* iOS
+
+To start capturing acceleration force alogn X,Y,Z axis, method `startAccelerometerCapture` must be called.
+```
+motionPlugin.startAccelerometerCapture(function (pluginResponse) {
+  // Acceleration capture started successfully
+}, function (error) {
+  // Something went wrong
+})
+```
+
+Once the sensor is started, an `onAccelerometerChanged` event will be triggered each time the device accelerometer returns new data.
+```
+document.addEventListener('onAccelerometerChanged', function (eventData) {
+  // Do something with the event data
+}, false)
+```
+
+The `eventData` object consists of a JSON with the following properties:
+* `x`: Acceleration force along the X axis (m/s2, including gravity)
+* `y`: Acceleration force along the Y axis (m/s2, including gravity)
+* `z`: Acceleration force along the Z axis (m/s2, including gravity)
+
+To stop the acceleration capture, method `stopAccelerometerCapture` must be called.
+```
+motionPlugin.stopAccelerometerCapture(function (pluginResponse) {
+  // Acceleration capture stopped successfully
+}, function (error) {
+  // Something went wrong
+})
+```
+
+#### Linear acceleration ####
+The plugin allows to get acceleration forces along X,Y,Z axis excluding gravity. This feature is only available on Android by the moment (on iOS is comming soon).
+
+To start capturing acceleration forces excluding gravity, method `startLinearAccelerometerCapture` must be called.
+```
+motionPlugin.startLinearAccelerometerCapture(function (pluginResponse) {
+  // Acceleration capture started successfully
+}, function (error) {
+  // Something went wrong
+})
+```
+
+Once the sensor is started, an `onLinearAccelerometerChanged` event will be triggered each time the device accelerometer returns new data.
+```
+document.addEventListener('onLinearAccelerometerChanged', function (eventData) {
+  // Do something with the event data
+}, false)
+```
+
+The `eventData` object consists of a JSON with the following properties:
+* `x`: Acceleration force along the X axis (m/s2, excluding gravity)
+* `y`: Acceleration force along the Y axis (m/s2, excluding gravity)
+* `z`: Acceleration force along the Z axis (m/s2, excluding gravity)
+
+To stop the acceleration capture, method `stopLinearAccelerometerCapture` must be called.
+```
+motionPlugin.stopLinearAccelerometerCapture(function (pluginResponse) {
+  // Acceleration capture stopped successfully
+}, function (error) {
+  // Something went wrong
+})
+```
