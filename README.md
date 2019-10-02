@@ -76,7 +76,7 @@ motionPlugin.stopActivityDetectionCapture(function (pluginResponse) {
 ```
 
 
-## <a id="activitytypes"></a> Detected activity identifiers ##
+## <a id="activitytypes"></a> Activity identifiers ##
 The `detectedActivities` array obtained in activity detection and recognition events contains string identifiers of the detected activities. These identifiers are:
 * *STILL*. The device is still (not moving).
 * *ON_FOOT*. The device is on a user who is walking or running.
@@ -189,6 +189,22 @@ function (error) {
   // Something went wrong while setting interval
 }
 ```
+
+#### Activity recognition event ####
+Once capture is started, the plugin will trigger an `onActivityRecognition` event each time the device responds with the recognized activity.
+
+```
+document.addEventListener('onActivityRecognition', function (eventData) {
+  console.log('onActivityDetection')
+
+  // Do something with eventData
+})
+```
+
+The `eventData` object consits of a JSON object with the following properties:
+* `detectedActivities`. An array containing the [recognized activity](#activitytypes). It will always be an array of only one element.
+* `confidence`. The confidence in the assessment of the detected activity. Number between 0 and 100.
+* `timestamp`. Timestamp indicating when the activity is recognized. Format _YYYY-MM-DD HH:mm:ss_.
 
 #### Stop activity monitoring ####
 To stop activity monitoring, method `stopActivityDetectionPolling` must be called.
