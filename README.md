@@ -238,6 +238,8 @@ motionPlugin.stopActivityDetectionPolling(function (pluginResponse) {
 ## <a id="activityeventswithlocation"></a> Activity events with location ##
 Is possible to get location coordinates (latitude & longitude) within event data from both activity detection and recognition.
 
+**NOTE:** Latitude and longitude can only be obtained if the device's location services are enabled and the application integrating this plugin has permissions to access them.
+
 #### Supported platforms ####
 * Android
 
