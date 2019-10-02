@@ -262,3 +262,36 @@ motionPlugin.setActivityDetectionEventsWithLocation(
 ```
 
 By doing this, the event data will contain _latitude_ and _longitude_ (as explained in [activity detection event](#activitydetectionevent) and [activity monitoring event](#activityrecognitionevent) sections) properties, with the location of the device at the moment the event is triggered.
+
+
+## Log of activities in a time period ##
+On iOS it is possible to get historical motion data for a specified time period.
+
+#### Supported platforms ####
+* iOS
+
+To get a list of activities detected by the device in a time period, method `getActivityLog` must be called, passing start and end dates as first and second parameter respectively. Dates format must be _YYYY-MM-DD HH:mm:ss_.
+```
+motionPlugin.getActivityLog(
+  fromDate,  // Start date in YYYY-MM-DD HH:mm:ss format
+  toDate, // End date in YYYY-MM-DD HH:mm:ss format
+  function (pluginResponse) {
+    // Log query completed successfully
+  },
+  function (error) {
+    // Something went wrong
+  })
+```
+
+A `onActivityQueryCompleted` event will be triggered with the log data.
+```
+document.addEventListener('onActivityQueryCompleted', function (eventData) {
+  // Do something with eventData
+})
+```
+
+The event data consists of a JSON with the following properties:
+* `activities`. Array with all the activities detected in the specified time period. Each object of the array will contain:
+  * `detectedActivities`. An array containing the [detected activities](#activitytypes). The array can contain several activities but commonly will contain only one.
+  * `confidence`. The confidence in the assessment of the detected activity. Its value can be *LOW*, *MEDIUM* or *HIGH*.
+  * `timestamp`. Timestamp indicating when the event is detected. Format _YYYY-MM-DD HH:mm:ss_.
