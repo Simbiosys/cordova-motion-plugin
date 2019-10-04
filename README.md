@@ -6,8 +6,6 @@ This plugin provides methods to get data from device accelerometer and motion se
 * Get a log of activities performed between two dates (iOS only).
 * Get raw data from device accelerometer along X,Y,Z axis.
 
-## WARNING: ##
-:construction: Documentation under construction :building_construction:
 
 ## Installation ##
 ```
